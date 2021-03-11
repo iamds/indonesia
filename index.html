@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @media print {
+            @page {
+                size: 297mm 210mm;
+
+                margin: 0mm;
+                margin-left: 0mm;
+
+                /* landscape */
+                /* you can also specify margins here: */
+                /* for compatibility with both A4 and Letter */
+            }
+
+            .pagebreak { page-break-before: always; } /* page-break-after works, as well */
+        }
+    </style>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+</head>
+
+<body>
+    <div id="main"></div>
+    <script type="text/babel">
+
+        const cubeSize = 1
+        const paperWidth = 297;
+        const paperHeight = 210;
+
+        const scale = cubeSize / 0.8;
+        const imageWidth = 1055 * scale;
+        const imageHeight = 507 * scale;
+        const minBoarder = 10;
+
+        const columns = Math.ceil(imageWidth / (paperWidth - minBoarder * 2));
+        const rows = Math.ceil(imageHeight / (paperHeight - minBoarder * 2));
+        console.log("columns", columns, "rows", rows);
+
+        function App(props) {
+            const maps = [];
+            for (var x = 0; x < columns; x++) {
+                for (var y = 0; y < rows; y++) {
+                    maps.push(<Map x={x} y={y} rows={rows} columns={columns} />);
+                }
+            }
+            return <div>
+                {maps}
+                </div>;
+        }
+
+        function Map(props) {
+            
+            const pageImageWidth = imageWidth / props.columns;
+            const pageImageHeight = imageHeight / props.rows;
+
+            const borderLeft = (paperWidth - pageImageWidth) / 2;
+            const borderTop = (paperHeight - pageImageHeight) / 2;
+
+            return <div style={{ pageBreakAfter: "always", paddingBottom: borderTop + "mm", paddingTop: borderTop + "mm", paddingLeft: borderLeft + "mm", paddingRight: borderLeft + "mm", width: paperWidth + "mm", height: paperHeight + "mm"}}>
+                
+                <div style={{ width: pageImageWidth + "mm", height: pageImageHeight + "mm", overflow: "hidden"}}> 
+                    <img src={"map.jpg"} style={{position: "relative", width: imageWidth + "mm", height: imageHeight + "mm", top: -props.y * pageImageHeight + "mm", left: -props.x * pageImageWidth + "mm"}} /> 
+                </div>
+                
+                </div>
+        }
+
+
+        ReactDOM.render(<App />, document.getElementById('main'));
+    </script>
+</body>
